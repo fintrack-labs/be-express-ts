@@ -1,16 +1,34 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
-import { UsersController } from './users/users.controller.js';
+import databaseConfig from './config/database.config.js';
+import authServiceConfig from './config/auth-service.config.js';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { HealthModule } from './modules/health/health.module.js';
+import { AuthModule } from './modules/auth/auth.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      load: [
+        databaseConfig,
+        authServiceConfig,
+      ],
     }),
+
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) =>
+        configService.get('database')!,
+      inject: [ConfigService],
+    }),
+
+    HealthModule,
+    AuthModule,
   ],
-  controllers: [AppController, UsersController],
+  controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
