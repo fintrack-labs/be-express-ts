@@ -14,10 +14,21 @@
     "sourceMap": true,
     "outDir": "./dist",
     "rootDir": ".",
+    "paths": {
+      "@common/*": [
+        "./src/common/*"
+      ],
+      "@modules/*": [
+        "./src/modules/*"
+      ]
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strict": true,
     "strictPropertyInitialization": false,
-    "types": ["vitest/globals", "node"]
+    "types": [
+      "vitest/globals",
+      "node"
+    ]
   }
 }

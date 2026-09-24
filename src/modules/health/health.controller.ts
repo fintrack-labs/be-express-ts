@@ -1,7 +1,8 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { AuthGuard } from '../auth/guards/auth/auth.guard.js';
-import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
+import { CurrentUser } from '../../common/decorators/current-user.decorator.js';
+import { type UserPojo } from '@common/interfaces/user.interface.js';
 
 @Controller('health')
 export class HealthController {
@@ -39,7 +40,7 @@ export class HealthController {
 
     @Get("protected")
     @UseGuards(AuthGuard)
-    protected(@CurrentUser() user: any) {
+    protected(@CurrentUser() user: UserPojo) {
         return {
             status: 'ok',
             message: 'AuthGuard & JWKS verification working properly!',

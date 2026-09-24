@@ -19,12 +19,7 @@ export class JwksService implements OnModuleInit {
 
     async verifyToken(token: string) {
         try {
-            const header = decodeProtectedHeader(token);
-            this.logger.debug(
-                `[DEBUG] Incoming Token Header -> alg: "${header.alg}", kid: "${header.kid}"`,
-            );
             const { payload } = await jwtVerify(token, this.jwksClient)
-            this.logger.log(`[SUCCESS] Token verified for subject (sub): ${payload.sub}`);
             return payload;
         } catch (error) {
             this.logger.error(`[ERROR] Invalid access token: ${error}`);
