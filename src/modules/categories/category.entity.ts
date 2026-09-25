@@ -3,9 +3,6 @@ import { BaseEntity } from "@common/entities/base.entity.js";
 import { AfterLoad, Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 
 @Entity('categories')
-// @Index('idx_categories_is_deleted', ['isDeleted'], {
-//     where: 'is_deleted = false'
-// })
 export class Category extends BaseEntity<number> {
     @Column({ name: 'user_id', type: 'varchar', length: 50, nullable: true })
     userId: string | null;

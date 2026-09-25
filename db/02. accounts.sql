@@ -6,13 +6,11 @@ CREATE TABLE accounts (
     balance DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
     account_number VARCHAR(50) NULL,
     currency VARCHAR(3) NOT NULL DEFAULT 'IDR',
-    
     -- Audit Trail & Soft Delete
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     created_by VARCHAR(50),
     updated_at TIMESTAMP WITH TIME ZONE,
     updated_by VARCHAR(50),
     deleted_at TIMESTAMP WITH TIME ZONE,
-    deleted_by VARCHAR(50),
-    is_deleted BOOLEAN DEFAULT FALSE NOT NULL
+    deleted_by VARCHAR(50)
 );

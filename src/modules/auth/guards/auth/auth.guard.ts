@@ -16,7 +16,7 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('Missing or invalid Authorization header');
     }
     const token = authHeader.split(' ')[1];
-    const userPayload: UserPojo = await this.jwksService.verifyToken(token) as unknown as UserPojo;
+    const userPayload = await this.jwksService.verifyToken(token) as unknown as UserPojo;
     request.user = userPayload;
     return true;
   }

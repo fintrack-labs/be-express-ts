@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Post, Query, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Request, UseGuards } from "@nestjs/common";
 import { CategoriesService } from "./categories.service.js";
-import { CategoryDto } from "./category.dto.js";
+import { CategoryDto } from "./dto/category.dto.js";
 import { AuthGuard } from "@modules/auth/guards/auth/auth.guard.js";
 import { CurrentUser } from "@common/decorators/current-user.decorator.js";
 import { type UserPojo } from "@common/interfaces/user.interface.js";
-import { CategoryResponseDto } from "./category.response.dto.js";
+import { CategoryResponseDto } from "./dto/category.response.dto.js";
 
 @Controller('categories')
 @UseGuards(AuthGuard)
@@ -25,5 +25,30 @@ export class CategoriesController {
         @Body() dto: CategoryDto,
     ): Promise<CategoryResponseDto> {
         return this.categoriesService.create(user.userId, dto);
+    }
+
+    @Get(':id')
+    async getOne(
+        @CurrentUser() user: UserPojo,
+        @Param('id') id: number,
+    ): Promise<CategoryResponseDto> {
+        return this.categoriesService.findById(user.userId, id);
+    }
+
+    @Put(':id')
+    async update(
+        @CurrentUser() user: UserPojo,
+        @Param('id') id: number,
+        @Body() dto: CategoryDto,
+    ): Promise<CategoryResponseDto> {
+        return this.categoriesService.update(user.userId, id, dto);
+    }
+
+    @Delete(':id')
+    async delete(
+        @CurrentUser() user: UserPojo,
+        @Param('id') id: number,
+    ): Promise<void> {
+        return this.categoriesService.delete(user.userId, id);
     }
 }
