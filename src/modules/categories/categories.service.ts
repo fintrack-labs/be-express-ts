@@ -26,7 +26,6 @@ export class CategoriesService {
         const newCategory = this.categoryRepository.create({
             ...dto,
             userId,
-            createdBy: userId,
         });
         const savedCategory = await this.categoryRepository.save(newCategory)
         return plainToInstance(CategoryResponseDto, savedCategory, {
@@ -35,6 +34,13 @@ export class CategoriesService {
     }
 
     async findById(userId: string, id: number): Promise<CategoryResponseDto> {
+        const category = await this.getById(userId, id);
+        return plainToInstance(CategoryResponseDto, category, {
+            excludeExtraneousValues: true
+        });
+    }
+
+    async getById(userId: string, id: number): Promise<Category> {
         const queryBuilder = this.categoryRepository
             .createQueryBuilder('category')
             .leftJoinAndSelect(
@@ -44,14 +50,11 @@ export class CategoriesService {
             )
             .andWhere('category.id = :id', { id })
             .andWhere('(category.userId = :userId OR category.userId IS NULL)', { userId });
-
         const category = await queryBuilder.getOne();
         if (!category) {
             throw new NotFoundException(`Category not found with id ${id}`);
         }
-        return plainToInstance(CategoryResponseDto, category, {
-            excludeExtraneousValues: true
-        });
+        return category;
     }
 
     async findAll(userId: string, dto: CategoryDto): Promise<CategoryResponseDto[]> {
@@ -79,8 +82,6 @@ export class CategoriesService {
             .addOrderBy('children.name', 'ASC')
             .getMany();
 
-        console.log('debug item', JSON.stringify(data[0], null, 2));
-
         return plainToInstance(CategoryResponseDto, data, {
             excludeExtraneousValues: true
         });
@@ -96,8 +97,7 @@ export class CategoriesService {
                 name: dto.name,
                 type: dto.type,
                 parentId: dto.parentId,
-                userId,
-                updatedBy: userId
+                userId
             }).filter(([key, value]) => value !== undefined && value !== null)
         )
         await this.categoryRepository.update(id, updateData);
@@ -105,11 +105,11 @@ export class CategoriesService {
     }
 
     async delete(userId: string, id: number): Promise<void> {
-        const category = await this.findById(userId, id);
+        const category = await this.getById(userId, id);
         if (category.userId === null) {
             throw new UnauthorizedException('You are not authorized to delete this category');
         }
-        await this.categoryRepository.softDelete(id);
+        await this.categoryRepository.softRemove(category);
     }
 
 }
